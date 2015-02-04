@@ -82,6 +82,7 @@ done
 # Search for all Objective-C source files in $folder
 find "$folder" -type f -name '*.m' -print0 | xargs -0 genstrings
 
+
 # Continue only if genstrings succeeded
 if [ $? -eq 0 ]; then
     mv "$baseStringsPath" "$newBaseStringsPath"
@@ -90,7 +91,7 @@ if [ $? -eq 0 ]; then
     rm "$newBaseStringsPath"
 
     # Get all locale strings folder
-    find $folder -type d -name "*$localeDirExt" -print0 | while IFS= read -r -d $'\0' localeStringsDir;
+    find "$folder" -type d -name "*$localeDirExt" -print0 | while IFS= read -r -d $'\0' localeStringsDir;
     do
 		localeStringsPath="$localeStringsDir/$stringsFile"
 
@@ -104,7 +105,19 @@ if [ $? -eq 0 ]; then
 	  		if [ $? -eq 0 ]; then
 	  			update_strings_file "$localeStringsPath" "$baseStringsPath"
 		    else
-				echo "${localeStringsPath} isn't in UTF-8 Format"
+                file -b --mime "$localeStringsPath" | grep us-ascii > /dev/null
+
+                if [ $? -eq 0 ]; then
+                    update_strings_file "$localeStringsPath" "$baseStringsPath"
+                else
+                    file -b --mime "$localeStringsPath" | grep binary > /dev/null
+
+                    if [ $? -eq 0 ]; then
+                        update_strings_file "$localeStringsPath" "$baseStringsPath"
+                    else
+                        echo "${localeStringsPath} isn't in UTF-8 Format"
+                    fi
+                fi
 	 	 	fi
 		fi
     done
@@ -116,7 +129,7 @@ rm $baseStringsPath
 # Extract strings from storyboards
 
 # Find storyboard file full path inside project folder
-find $folder -type f -iname "*$storyboardExt" -print0 | while IFS= read -r -d $'\0' storyboardPath;
+find "$folder" -type f -iname "*$storyboardExt" -print0 | while IFS= read -r -d $'\0' storyboardPath;
 do
     # Get Base strings file full path
     baseStringsPath=$(echo "$storyboardPath" | sed "s/$storyboardExt/$stringsExt/")
@@ -155,7 +168,7 @@ do
         fi
 
         # Get all locale strings folder
-		find $folder -type d -name "*$localeDirExt" -print0 | while IFS= read -r -d $'\0' localeStringsDir;
+		find "$folder" -type d -name "*$localeDirExt" -print0 | while IFS= read -r -d $'\0' localeStringsDir;
 		do
             # Skip Base strings folder
             if [ "$localeStringsDir" != "$storyboardDir" ]; then
@@ -171,7 +184,19 @@ do
 			  		if [ $? -eq 0 ]; then
 			  			update_strings_file "$localeStringsPath" "$baseStringsPath"
 				    else
-						echo "${localeStringsPath} isn't in UTF-8 Format"
+                        file -b --mime "$localeStringsPath" | grep us-ascii > /dev/null
+
+                        if [ $? -eq 0 ]; then
+                            update_strings_file "$localeStringsPath" "$baseStringsPath"
+                        else
+                            file -b --mime "$localeStringsPath" | grep binary > /dev/null
+
+                            if [ $? -eq 0 ]; then
+                                update_strings_file "$localeStringsPath" "$baseStringsPath"
+                            else
+                                echo "${localeStringsPath} isn't in UTF-8 Format"
+                            fi
+                        fi
 			 	 	fi
                 fi
             fi
