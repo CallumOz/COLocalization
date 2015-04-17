@@ -80,7 +80,7 @@ while [ "$1" != "" ]; do
 done
 
 # Search for all Objective-C source files in $folder
-find "$folder" -type f -name '*.m' -print0 | xargs -0 genstrings
+find "$folder" -type f -name '*.m' -or -name '*.swift' -print0 | xargs -0 genstrings
 
 
 # Continue only if genstrings succeeded
