@@ -93,33 +93,33 @@ if [ $? -eq 0 ]; then
     # Get all locale strings folder
     find "$folder" -type d -name "*$localeDirExt" -print0 | while IFS= read -r -d $'\0' localeStringsDir;
     do
-		localeStringsPath="$localeStringsDir/$stringsFile"
+	localeStringsPath="$localeStringsDir/$stringsFile"
 
         # Just copy base strings file on first time
-		if [ ! -e "$localeStringsPath" ]; then
-            cp "$baseStringsPath" "$localeStringsPath"
+	if [ ! -e "$localeStringsPath" ]; then
+	    cp "$baseStringsPath" "$localeStringsPath"
+	else
+	    # Look for the encoding of the strings file found
+	    file -b --mime "$localeStringsPath" | grep utf-8 > /dev/null
+
+            if [ $? -eq 0 ]; then
+       		update_strings_file "$localeStringsPath" "$baseStringsPath"
+            else
+     		file -b --mime "$localeStringsPath" | grep us-ascii > /dev/null
+
+		if [ $? -eq 0 ]; then
+      		    update_strings_file "$localeStringsPath" "$baseStringsPath"
 		else
-			# Look for the encoding of the strings file found
-		    file -b --mime "$localeStringsPath" | grep utf-8 > /dev/null
+      		    file -b --mime "$localeStringsPath" | grep binary > /dev/null
 
-	  		if [ $? -eq 0 ]; then
-	  			update_strings_file "$localeStringsPath" "$baseStringsPath"
-		    else
-                file -b --mime "$localeStringsPath" | grep us-ascii > /dev/null
-
-                if [ $? -eq 0 ]; then
-                    update_strings_file "$localeStringsPath" "$baseStringsPath"
-                else
-                    file -b --mime "$localeStringsPath" | grep binary > /dev/null
-
-                    if [ $? -eq 0 ]; then
-                        update_strings_file "$localeStringsPath" "$baseStringsPath"
-                    else
-                        echo "${localeStringsPath} isn't in UTF-8 Format"
-                    fi
-                fi
-	 	 	fi
+		    if [ $? -eq 0 ]; then
+	  		update_strings_file "$localeStringsPath" "$baseStringsPath"
+	       	    else
+	      		echo "${localeStringsPath} isn't in UTF-8 Format"
+	    	    fi
 		fi
+      	    fi
+	fi
     done
 fi
 
@@ -168,8 +168,8 @@ do
         fi
 
         # Get all locale strings folder
-		find "$folder" -type d -name "*$localeDirExt" -print0 | while IFS= read -r -d $'\0' localeStringsDir;
-		do
+	find "$folder" -type d -name "*$localeDirExt" -print0 | while IFS= read -r -d $'\0' localeStringsDir;
+    	do
             # Skip Base strings folder
             if [ "$localeStringsDir" != "$storyboardDir" ]; then
                 localeStringsPath="$localeStringsDir/$stringsFile"
@@ -179,11 +179,11 @@ do
                     cp "$baseStringsPath" "$localeStringsPath"
                 else
                     # Look for the encoding of the strings file found
-				    file -b --mime "$localeStringsPath" | grep utf-8 > /dev/null
+		    file -b --mime "$localeStringsPath" | grep utf-8 > /dev/null
 
-			  		if [ $? -eq 0 ]; then
-			  			update_strings_file "$localeStringsPath" "$baseStringsPath"
-				    else
+		    if [ $? -eq 0 ]; then
+       	       		update_strings_file "$localeStringsPath" "$baseStringsPath"
+		    else
                         file -b --mime "$localeStringsPath" | grep us-ascii > /dev/null
 
                         if [ $? -eq 0 ]; then
@@ -197,7 +197,7 @@ do
                                 echo "${localeStringsPath} isn't in UTF-8 Format"
                             fi
                         fi
-			 	 	fi
+		    fi
                 fi
             fi
         done
