@@ -10,6 +10,9 @@
 # or looking at the encoding in Xcode
 #
 
+# This is the folder containing the script, for getting resources
+baseDir=$(dirname $0)
+
 folder="."
 baseStringsPath="Localizable.strings"
 localeDirExt="lproj"
@@ -52,7 +55,7 @@ function update_strings_file()
 	cp "$1" "$oldLocaleStringsPath"
 
 	# Merge baseStringsPath to localeStringsPath
-	awk -f "merge_strings_file.awk" "$oldLocaleStringsPath" "$2" > "$1"
+	awk -f "${baseDir}/merge_strings_file.awk" "$oldLocaleStringsPath" "$2" > "$1"
 
 	rm "$oldLocaleStringsPath"
 }
