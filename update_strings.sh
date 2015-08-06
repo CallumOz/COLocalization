@@ -48,7 +48,7 @@ function check_value()
 	fi
 }
 
-# Takes 2 Args, the 2 files t
+# Takes 2 Args, the 2 files to merge
 function update_strings_file()
 {
 	oldLocaleStringsPath=$(echo "$1" | sed "s/$stringsExt/$oldStringsExt/")
