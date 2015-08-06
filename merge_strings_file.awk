@@ -18,6 +18,7 @@ BEGIN {
 
 #
 # Read full comment
+# Takes into account multiline comments
 #
 /^\/\*/,/\*\/$/ {
 	com = com ? com"\n"$0 : $0;
@@ -26,6 +27,7 @@ BEGIN {
 
 #
 # Read original key value pairs
+# Multiline strings are not taken into account
 #
 NR == FNR && /^"/ {
 	a[$1] = $2;
@@ -52,7 +54,7 @@ NR == FNR && /^"/ {
 #
 # Find all pairs that haven't been printed and add them at the end
 #
-END{
+END {
 	first  = "true";
 
 	for (i in v) {
